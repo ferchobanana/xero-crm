@@ -1,14 +1,36 @@
 <script>
-	import { enhance } from '$app/forms';
+    import { enhance } from '$app/forms';
+    import { goto } from "$app/navigation"
+	import { browser } from '$app/environment';
+    import LoadingPage from "$lib/components/LoadingPage.svelte"
+
     export let form
     export let data
+
+    let loading = false
+
+    $: if(form?.message) {
+        loading = false
+
+        if(form.status === 200 && browser) {
+            goto('/?msg=La%20configuración%20se%20guardó%20correctamente')
+        }
+    }
+
+    function pageLoading() {
+        loading = true
+    }
 </script>
 
 <div>
 
+    {#if loading}
+        <LoadingPage></LoadingPage>
+    {/if}
+
     <h1>Configuración</h1>
 
-    <form method="POST" class="card">
+    <form method="POST" class="card" on:submit={pageLoading}>
 
         <div class="input-container">
             <label for="dataset_id" class="base-label">Identificador de conjunto de datos</label>

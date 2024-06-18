@@ -12,6 +12,7 @@
         <a href="/">Crear evento</a>
         <a href="/eventos">Eventos</a>
         <a href="/config">Configuraciones</a>
+        <a href="/tutorial">Tutorial</a>
     </div>
 
     <form action="/?/logout" method="POST" use:enhance>

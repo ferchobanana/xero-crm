@@ -20,6 +20,8 @@ export const actions = {
         const email = formData.get('email')
         const country = formData.get('country')
         const eventType = formData.get('event-type')
+        const currency = formData.get('currency')
+        const value = formData.get('value')
 
         if (typeof name !== "string" || name.length == 0) {
             return fail(400, { message: "El nombre es obligatorio" })
@@ -40,6 +42,8 @@ export const actions = {
         if (typeof eventType !== "string" || eventType.length == 0) {
             return fail(400, { message: "El tipo de evento es obligatorio" })
         }
+
+        console.log('Se verificaron todos los datos')
         
         let dataset_id = ""
         let api_token = ""
@@ -57,18 +61,9 @@ export const actions = {
             return fail(400, { message: "No se pudo crear el evento, intentalo nuevamente."})
         }
 
-        // Creamos el evento en el API graph de Meta
-        try {
-            const res = await fetch(`https://graph.facebook.com/v20.0/${dataset_id}/events?access_token=${api_token}`, {
-                method: "POST",
-                headers: {},
-                body: ""
-            })
-            const json = await res.json()
-        }
-        catch {}
+        console.log('Se obtuvo correctamente el ID del DataSet y el Token')
 
-        // Guardamos el nuevo evento registrado en la DB
+        // Creamos el evento en el API graph de Meta
         try {
 
             const hashedName = CryptoJS.SHA256(name).toString(CryptoJS.enc.Hex)
@@ -94,18 +89,40 @@ export const actions = {
                             ]
                         },
                         "custom_data": {
-                            "currency": "USD",
-                            "value": "142.52"
+                            "currency": currency,
+                            "value": value
                         }
                     }
                 ]
             }
 
+            console.log('Se está enviando el evento a Facebook...')
+
+            const res = await fetch(`https://graph.facebook.com/v20.0/${dataset_id}/events?access_token=${api_token}`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(eventData)
+            })
+
+            const json = await res.json()
+
+            console.log('Facebook respondio:')
+            console.log(json)
+        }
+        catch {
+            return fail(400, { message: 'Fallo el registro del evento en Meta. Intenta nuevamente.'})
+        }
+
+        // Guardamos el nuevo evento registrado en la DB
+        try {
             await db.insert(eventsTable).values({
                 userId: locals.user.id,
-                eventData: { name, number, email, country },
+                eventData: { name, number, email, country, value, currency },
                 type: eventType
             })
+
+            console.log('El evento se guardo correctamente en la DB')
+
         }
         catch {
             return fail(400, { message: "El evento se envió exitosamente a facebook, pero tuvimos problmas para guardar, lo sentimos :("})

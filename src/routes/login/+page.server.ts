@@ -47,9 +47,9 @@ export const actions = {
             })
         }
 
-        if (existingUser.type != "admin") {
-            return fail(400, { message: "Correo o contraseña incorrectos." })
-        }
+        // if (existingUser.type != "admin") {
+        //     return fail(400, { message: "Correo o contraseña incorrectos." })
+        // }
 
         // Validamos la contraseña con la funcion verify de argon2
         const validPassword = await verify(existingUser.password, password, {

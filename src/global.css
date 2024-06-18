@@ -81,7 +81,7 @@
     padding: 20px;
 }
 
-.base-pagination>a {
+.base-pagination > a {
     display: grid;
     place-items: center;
     width: 30px;
@@ -93,4 +93,8 @@
     background-color: #fff;
     border: 1px solid var(--border-light-color);
     border-radius: 5px;
+}
+
+.base-pagination > a.selected-page {
+    color: var(--primary-color);
 }

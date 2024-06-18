@@ -78,7 +78,7 @@ export const actions = {
         });
 
         // Redirigimos
-        redirect(302, "/")
+        redirect(302, "/tutorial")
 
     }
 

@@ -1,13 +1,40 @@
-<script>
+<script lang="ts">
 	import { enhance } from '$app/forms';
+    import { page } from '$app/stores'
+
     import { paisesLatam as paises } from "$lib/utils/paises"
+    import LoadingPage from "$lib/components/LoadingPage.svelte"
     export let form
+
+    let loading = false
+
+    $: if(form?.message) {
+        loading = false
+    }
+
+    function pageLoading() {
+        loading = true
+    }
+
+    // let pageMessage: string | null = $page.url.searchParams.get('msg')
+
 </script>
 
 <div>
+
+    {#if loading}
+        <LoadingPage></LoadingPage>
+    {/if}
+
+    <!-- {#if pageMessage}
+        <div class="page-message">
+            <p>{ pageMessage }</p>
+        </div>
+    {/if} -->
+
     <h1>Crea un nuevo evento</h1>
 
-    <form action="/?/createEvent" method="POST" class="card" use:enhance>
+    <form action="/?/createEvent" method="POST" class="card" use:enhance on:submit={pageLoading}>
 
         <div class="input-container">
             <label for="" class="base-label">Nombre *</label>
@@ -26,9 +53,9 @@
 
         <div class="input-container">
             <label for="" class="base-label">País *</label>
-            <select id="" class="base-input" name="country">
-                {#each paises as pais}
-                    <option value={ pais }>{ pais }</option>
+            <select id="" class="base-input" name="country" value="mx">
+                {#each paises as p}
+                    <option value={ p.code }>{ p.name }</option>
                 {/each}
             </select>
         </div>
@@ -43,14 +70,14 @@
 
         <div class="input-container">
             <label for="" class="base-label">Valor de la compra (opcional)</label>
-            <input type="text" class="base-input" placeholder="$">
+            <input type="text" class="base-input" name="value" placeholder="$">
         </div>
 
         <div class="input-container">
             <label for="" class="base-label">Moneda</label>
-            <select name="value" id="" class="base-input">
+            <select name="currency" id="" class="base-input" value="MXN">
                 <option value="USD">USD</option>
-                <option value="MSN">MXN</option>
+                <option value="MXN">MXN</option>
             </select>
         </div>
 
@@ -81,5 +108,18 @@
     }
     button {
         width: 200px;
+    }
+
+    .page-message {
+        width: 400px;
+        display: grid;
+        place-items: center;
+        background-color: #fff;
+        height: 60px;
+        color: #2cc28b;
+        font-weight: 500;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0px 0px 50px -20px rgba(0, 0, 0, 0.1);
     }
 </style>
